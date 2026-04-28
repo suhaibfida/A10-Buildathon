@@ -1,102 +1,84 @@
-
 import { useState } from "react"
-import { Button, Input } from "@repo/ui"
-import { useNavigate } from "react-router-dom"
-import { registerUser } from "../api/auth"
+import axios from "axios"
 
-export const Register = () => {
+export default function Signup() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const navigate = useNavigate()
+  const [role, setRole] = useState("STUDENT")
+  const [rollNumber, setRollNumber] = useState("")
 
-  const handleRegister = async () => {
-    const data = await registerUser(name, email, password)
+  const handleSignup = async () => {
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/auth/register",
+        {
+          name,
+          email,
+          password,
+          role,
+          rollNumber: role === "STUDENT" ? rollNumber : undefined,
+        },
+        { withCredentials: true }
+      )
 
-    if (data.error) {
-      alert(data.error)
-      return
+      console.log("SUCCESS:", res.data)
+
+    } catch (err) {
+      console.log("ERROR:", err)
     }
-
-    alert("Registered successfully")
-    navigate("/")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
+    <div className="h-screen flex items-center justify-center bg-black">
+      <div className="bg-gray-900 p-6 rounded-xl w-80 space-y-4 text-white">
 
-      {/* Card */}
-      <div className="w-full max-w-md bg-zinc-900 p-10 rounded-2xl shadow-xl border border-zinc-800">
+        <h1 className="text-2xl font-bold text-center">Signup</h1>
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-semibold tracking-tight">
-            Create Account
-          </h2>
-          <p className="text-gray-400 text-sm mt-2">
-            Join the AI Attendance System
-          </p>
-        </div>
+        <input
+          className="w-full p-2 rounded bg-gray-800"
+          placeholder="Name"
+          onChange={(e) => setName(e.target.value)}
+        />
 
-        {/* Form */}
-        <div className="space-y-6">
+        <input
+          className="w-full p-2 rounded bg-gray-800"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-          {/* Name */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Full Name</label>
-            <Input
-              placeholder="Enter your name"
-              onChange={(e) => setName(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <input
+          className="w-full p-2 rounded bg-gray-800"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-          {/* Email */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Email</label>
-            <Input
-              placeholder="Enter your email"
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        <select
+          className="w-full p-2 rounded bg-gray-800"
+          onChange={(e) => setRole(e.target.value)}
+        >
+          <option value="STUDENT">Student</option>
+          <option value="TEACHER">Teacher</option>
+          <option value="ADMIN">Admin</option>
+        </select>
 
-          {/* Password */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Password</label>
-            <Input
-              type="password"
-              placeholder="Enter your password"
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+        {role === "STUDENT" && (
+          <input
+            className="w-full p-2 rounded bg-gray-800"
+            placeholder="Roll Number"
+            onChange={(e) => setRollNumber(e.target.value)}
+          />
+        )}
 
-          {/* Button */}
-          <div className="pt-2">
-            <Button
-              onClick={handleRegister}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 transition"
-            >
-              Register
-            </Button>
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p
-            onClick={() => navigate("/")}
-            className="text-sm text-blue-400 cursor-pointer hover:underline"
-          >
-            Already have an account? Login
-          </p>
-        </div>
+        <button
+          className="w-full bg-green-500 p-2 rounded"
+          onClick={handleSignup}
+        >
+          Signup
+        </button>
 
       </div>
     </div>
   )
 }
-
-export default Register

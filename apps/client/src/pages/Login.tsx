@@ -1,96 +1,51 @@
 import { useState } from "react"
-import { Button, Input } from "@repo/ui"
-import { useNavigate } from "react-router-dom"
-import { loginUser } from "../api/auth"
+import axios from "axios"
 
-export const Login = () => {
+export default function Login() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [loading, setLoading] = useState(false)
-
-  const navigate = useNavigate()
 
   const handleLogin = async () => {
-    if (!email || !password) return
+    try {
+      const res = await axios.post(
+        "http://localhost:3000/auth/login",
+        { email, password },
+        { withCredentials: true }
+      )
 
-    setLoading(true)
-    const data = await loginUser(email, password)
-    setLoading(false)
-
-    if (data.error) {
-      alert(data.error)
-      return
+      console.log("SUCCESS:", res.data)
+    } catch (err) {
+      console.log("ERROR:", err)
     }
-
-    navigate("/dashboard")
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-black text-white px-4">
+    <div className="h-screen flex items-center justify-center bg-black">
+      <div className="bg-gray-900 p-6 rounded-xl w-80 space-y-4 text-white shadow-lg">
+        
+        <h1 className="text-2xl font-bold text-center">Login</h1>
 
-      {/* Card */}
-      <div className="w-full max-w-md bg-zinc-900 p-10 rounded-2xl shadow-xl border border-zinc-800">
+        <input
+          className="w-full p-2 rounded bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h2 className="text-3xl font-semibold tracking-tight">
-            Welcome Back
-          </h2>
-          <p className="text-gray-400 text-sm mt-2">
-            Login to continue
-          </p>
-        </div>
+        <input
+          className="w-full p-2 rounded bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
+          type="password"
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-        {/* Form */}
-        <div className="space-y-6">
-
-          {/* Email */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Email</label>
-            <Input
-              placeholder="Enter your email"
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="space-y-2">
-            <label className="text-sm text-gray-400">Password</label>
-            <Input
-              type="password"
-              placeholder="Enter your password"
-              onChange={(e) => setPassword(e.target.value)}
-              className="bg-zinc-800 border border-zinc-700 text-white placeholder-gray-500 px-3 py-2 focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-
-          {/* Button */}
-          <div className="pt-2">
-            <Button
-              onClick={handleLogin}
-              disabled={loading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 transition"
-            >
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-          </div>
-
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p
-            onClick={() => navigate("/register")}
-            className="text-sm text-blue-400 cursor-pointer hover:underline"
-          >
-            Don’t have an account? Register
-          </p>
-        </div>
+        <button
+          className="w-full bg-blue-500 hover:bg-blue-600 p-2 rounded transition"
+          onClick={handleLogin}
+        >
+          Login
+        </button>
 
       </div>
     </div>
   )
 }
-
-export default Login
