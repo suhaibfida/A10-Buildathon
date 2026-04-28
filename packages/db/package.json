@@ -3,16 +3,23 @@
   "module": "index.ts",
   "type": "module",
   "private": true,
+  "prisma": {
+  "seed": "bun tsx prisma/seed.ts"
+},
   "devDependencies": {
-    "@types/bun": "latest",
-    "@repo/typescript-config": "*"
+    "@repo/typescript-config": "*",
+    "@types/bcrypt": "^6.0.0",
+    "@types/bun": "latest"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
-    "dotenv": "^17.4.2",
+    "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
     "prisma": "^7.8.0"
   }
+  
 }
