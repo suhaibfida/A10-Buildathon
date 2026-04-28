@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 const app = express();
 import cookieParser from "cookie-parser";

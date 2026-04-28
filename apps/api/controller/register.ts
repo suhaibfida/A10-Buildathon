@@ -1,4 +1,3 @@
-import express from "express"
 import {Request,Response} from "express"
 import { prisma } from "@repo/db/prisma"
 import bcrypt from "bcrypt"
@@ -68,6 +67,11 @@ export const register= ( async (req:Request, res:Response) => {
 //   ---------------------------------------------
 export const login=async (req:Request, res:Response) => {
     try {
+      const jwtSecret = process.env.JWT_SECRET
+      if (!jwtSecret) {
+        return res.status(500).json({ error: "JWT_SECRET is not set" })
+      }
+
       // 🔹 1. Validate input
       const result = loginSchema.safeParse(req.body)
   
@@ -105,7 +109,7 @@ export const login=async (req:Request, res:Response) => {
           userId: user.id,
           role: user.role,
         },
-        process.env.JWT_SECRET!,
+        jwtSecret,
         { expiresIn: "7d" }
       )
   
@@ -134,4 +138,3 @@ export const login=async (req:Request, res:Response) => {
     }
   };
   
-  export default register;
