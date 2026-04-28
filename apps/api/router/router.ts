@@ -11,7 +11,7 @@ import { assignTeacherToClass } from "../controller/assignTeacher.js"
 
 import { startSession } from "../controller/studentSession.js"
 import { markAttendance } from "../controller/markAttendance.js"
-
+import {endSession} from "../controller/endSession.js"
 import { registerFace } from "../controller/registerFace.js"
 
 const router: Router = Router()
@@ -37,5 +37,12 @@ router.post(
   authorizeRoles("STUDENT", "ADMIN"),
   registerFace
 )
+// endSession
+router.post(
+    "/teacher/session/:sessionId/end",
+    authMiddleware,
+    authorizeRoles("TEACHER"),
+    endSession
+  )
 
 export default router
