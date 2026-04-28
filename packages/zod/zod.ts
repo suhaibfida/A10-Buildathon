@@ -1,5 +1,5 @@
 import {z} from "zod"
-export const signupSchema = z.object({
+export const registerSchema = z.object({
     name: z.string().min(2),
     email: z.string().email(),
     password: z.string().min(6),
@@ -13,6 +13,16 @@ export const signupSchema = z.object({
   }, {
     message: "rollNumber is required for students",
     path: ["rollNumber"]
+  })
+  export const loginSchema = z.object({
+    email: z
+      .string()
+      .email("Invalid email format")
+      .min(1, "Email is required"),
+  
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters")
   })
   export const createClassSchema = z.object({
     name: z.string().min(2),

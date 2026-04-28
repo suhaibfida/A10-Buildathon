@@ -1,10 +1,13 @@
 {
-  "name": "db",
+  "name": "@repo/db",
   "module": "index.ts",
   "type": "module",
   "private": true,
   "prisma": {
   "seed": "bun tsx prisma/seed.ts"
+},
+"exports":{
+"./prisma":"./index.ts"
 },
   "devDependencies": {
     "@repo/typescript-config": "*",
