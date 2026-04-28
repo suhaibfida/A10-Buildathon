@@ -31,8 +31,13 @@ export const createDepartment = async (req: Request, res: Response) => {
       data: department
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
+
+    if (error?.code === "P2002") {
+      return res.status(409).json({ error: "Department already exists" })
+    }
+
     res.status(500).json({ error: "Internal server error" })
   }
 }

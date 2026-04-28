@@ -63,7 +63,7 @@ enum Status {
 
 model Department {
   id        String   @id @default(uuid())
-  name      String
+  name      String   @unique
 
   users     User[]
   classes   Class[]
