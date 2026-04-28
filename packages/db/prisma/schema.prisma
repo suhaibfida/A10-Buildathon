@@ -1,0 +1,160 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+enum SessionStatus {
+  OPEN
+  CLOSED
+  CANCELLED
+}
+model User {
+  id            String   @id @default(uuid())
+
+  name          String
+  email         String?  @unique
+  rollNumber    String?  @unique
+
+  passwordHash  String?
+  role          Role
+  status        Status
+
+  // AI + personalization
+  attendancePercentage Float @default(0)
+  taughtSessions AttendanceSession[] @relation("SessionTeacher")
+  taughtClasses Class[] @relation("ClassTeacher")
+
+  // Relations
+  departmentId  String?
+  department    Department? @relation(fields: [departmentId], references: [id])
+
+  classId       String?
+  class         Class? @relation(fields: [classId], references: [id])
+
+  // Face AI
+  faceEmbeddings FaceEmbedding[]
+
+  // Attendance
+  attendances   Attendance[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+}
+
+enum Status {
+  NOT_REGISTERED
+  ACTIVE
+  BLOCKED
+}
+
+model Department {
+  id        String   @id @default(uuid())
+  name      String
+
+  users     User[]
+  classes   Class[]
+
+  createdAt DateTime @default(now())
+}
+
+model Class {
+  id            String   @id @default(uuid())
+  name          String
+
+  departmentId  String
+  department    Department @relation(fields: [departmentId], references: [id])
+
+  teacherId     String?
+  teacher       User? @relation("ClassTeacher", fields: [teacherId], references: [id])
+
+  students      User[]
+  sessions      AttendanceSession[]
+
+  createdAt     DateTime @default(now())
+}
+
+model FaceEmbedding {
+  id        String   @id @default(uuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  vector    Json
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+model AttendanceSession {
+  id        String   @id @default(uuid())
+
+  classId   String
+  class     Class    @relation(fields: [classId], references: [id])
+
+  teacherId String
+  teacher   User     @relation("SessionTeacher", fields: [teacherId], references: [id])
+
+  startTime DateTime
+  endTime   DateTime?
+
+  status    SessionStatus @default(OPEN)
+
+  attendances Attendance[]
+
+  createdAt DateTime @default(now())
+}
+
+model Attendance {
+  id            String   @id @default(uuid())
+
+  userId        String
+  user          User     @relation(fields: [userId], references: [id])
+
+  sessionId     String
+  session       AttendanceSession @relation(fields: [sessionId], references: [id])
+
+  status        AttendanceStatus
+
+  confidence    Float?   // face match score
+
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, sessionId]) // prevent duplicate marking
+}
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  FLAGGED
+}
+
+model RagDocument {
+  id        String   @id @default(uuid())
+
+  title     String
+  content   String
+
+  embedding Json     // vector for RAG
+
+  type      RagType  // TEACHER | DEPARTMENT | GENERAL
+
+  createdAt DateTime @default(now())
+}
+
+enum RagType {
+  TEACHER
+  DEPARTMENT
+  GENERAL
+}
