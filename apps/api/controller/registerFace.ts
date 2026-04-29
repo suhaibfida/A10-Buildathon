@@ -1,12 +1,16 @@
 import { Request, Response } from "express"
 import { prisma } from "@repo/db/prisma"
-import { embeddingFromInput, isValidEmbedding } from "./faceEmbedding.js"
+import {
+  FaceEmbeddingError,
+  embeddingFromInput,
+  isFaceApiConfigured,
+  isValidEmbedding,
+} from "./faceEmbedding.js"
 
 export const registerFace = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.userId
     const role = req.user?.role
-    const embedding = embeddingFromInput(req.body.embedding ?? req.body.frames)
 
     if (!userId || !role) {
       return res.status(401).json({
@@ -31,7 +35,16 @@ export const registerFace = async (req: Request, res: Response) => {
       })
     }
 
+    const faceInput = req.body.embedding ?? req.body.frames
+    const embedding = await embeddingFromInput(faceInput)
+
     if (!embedding) {
+      if (Array.isArray(req.body.frames) && req.body.frames.length > 0 && !isFaceApiConfigured()) {
+        return res.status(503).json({
+          error: "face-api.js model files are not configured on the backend"
+        })
+      }
+
       return res.status(400).json({
         error: "Embedding array or camera frames are required"
       })
@@ -67,6 +80,12 @@ export const registerFace = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error("Register Face Error:", error)
+
+    if (error instanceof FaceEmbeddingError) {
+      return res.status(error.statusCode).json({
+        error: error.message
+      })
+    }
 
     return res.status(500).json({
       error: "Internal server error"
