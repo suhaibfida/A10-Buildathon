@@ -11,6 +11,8 @@
 
 An AI-powered attendance platform using **face recognition + BLE proximity + session-based verification**.
 Built with a modern **TurboRepo + Bun + TypeScript** stack.
+
+
 “Used AI tools to accelerate development, but ensured full understanding of system design and implementation”
 ---
 
