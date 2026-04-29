@@ -1,4 +1,4 @@
-# 🚀 AI0 Attendance System (TurboRepo Monorepo)
+#  AI0 Attendance System (TurboRepo Monorepo)
 
 An AI-powered attendance platform using **face recognition + BLE proximity + session-based verification**.
 Built with a modern **TurboRepo + Bun + TypeScript** stack.
@@ -7,13 +7,13 @@ Built with a modern **TurboRepo + Bun + TypeScript** stack.
 
 ## 🧠 Features
 
-* 🔐 Admin-controlled system (no public signup)
-* 👨‍🏫 Teacher session-based attendance (time-bound)
-* 🎓 Student face recognition (AI embeddings)
-* 📡 BLE proximity verification (anti-cheating)
-* 📊 Daily attendance analytics
-* 🤖 AI Assistant (RAG-based queries)
-* ⚡ Monorepo architecture with TurboRepo
+* Admin-controlled system (no public signup)
+* Teacher session-based attendance (time-bound)
+*  Student face recognition (AI embeddings)
+*  BLE proximity verification (anti-cheating)
+*  Daily attendance analytics
+*  AI Assistant (RAG-based queries)
+*  Monorepo architecture with TurboRepo
 
 ---
 
@@ -52,7 +52,7 @@ Built with a modern **TurboRepo + Bun + TypeScript** stack.
 * Embeddings: 128-d face vectors
 * Similarity: Cosine similarity
 
-### 📱 Frontend
+###  Frontend
 
 * React / Next.js
 * Tailwind CSS
@@ -240,19 +240,12 @@ Frontend → Backend API → AI (face-api)
 
 ## 🚀 Future Improvements
 
-* Switch to InsightFace (better accuracy)
-* Add GPU acceleration
-* Use vector database (Pinecone)
-* Advanced anti-spoofing (liveness detection)
+* Switch to  Pinecone for vector databases
+* Use GPS [Student present in campus]
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Pull requests are welcome. For major changes, open an issue first.
 
----
-
-## 📄 License
-
-MIT License
