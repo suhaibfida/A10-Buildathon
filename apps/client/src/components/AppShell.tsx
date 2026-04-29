@@ -29,6 +29,7 @@ function navFor(user?: CurrentUser) {
   }
 
   return [
+    { label: "Home", to: "/home" },
     { label: "Login", to: "/login" },
     { label: "Activate", to: "/student/activate" },
   ];

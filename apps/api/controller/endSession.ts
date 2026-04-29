@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { prisma } from "@repo/db/prisma"
+import { clearBleSession } from "./bleSession.js"
 
 export const endSession = async (req: Request, res: Response) => {
   try {
@@ -92,6 +93,7 @@ export const endSession = async (req: Request, res: Response) => {
         endTime: new Date()
       }
     })
+    clearBleSession(sessionId)
 
     return res.status(200).json({
       message: "Session ended successfully",

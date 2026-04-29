@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000/api/v1";
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "http://localhost:3000/api/v1";
 
 export type ApiResult = {
   ok: boolean;
@@ -20,10 +20,26 @@ export type CurrentUser = {
   departmentId?: string | null;
 };
 
+export type TeacherClass = {
+  id: string;
+  name: string;
+  department?: { id: string; name: string } | null;
+  _count?: { students?: number };
+};
+
+export type BlePayload = {
+  type: "ATTENDANCE";
+  sessionId: string;
+  token: string;
+  issuedAt: number;
+  refreshAfterMs: number;
+  expiresAt: number;
+};
+
 async function apiRequest(method: string, path: string, body?: unknown): Promise<ApiResult> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     method,
-    headers: {
+    headers: body === undefined ? undefined : {
       "Content-Type": "application/json",
     },
     credentials: "include",
@@ -31,7 +47,14 @@ async function apiRequest(method: string, path: string, body?: unknown): Promise
   });
 
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data: unknown = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      data = text;
+    }
+  }
 
   return {
     ok: response.ok,
@@ -88,8 +111,11 @@ export const api = {
     apiPost(`/admin/class/${classId}/students`, body),
   assignTeacherToClass: (classId: string, body: { teacherId: string }) =>
     apiPost(`/admin/class/${classId}/teacher`, body),
+  teacherClasses: () => apiGet("/teacher/classes"),
+  teacherActiveSession: (classId: string) => apiGet(`/teacher/class/${classId}/active-session`),
   startSession: (classId: string, body: { durationMinutes: number }) =>
     apiPost(`/teacher/class/${classId}/start-session`, body),
+  teacherBleToken: (sessionId: string) => apiGet(`/teacher/session/${sessionId}/ble-token`),
   submitAttendance: (body: { sessionId: string; frames: string[] }) =>
     apiPost("/student/attendance/submit", body),
   markAttendance: (sessionId: string, body: { userId: string; status: string }) =>
@@ -97,7 +123,10 @@ export const api = {
   endSession: (sessionId: string) => apiPost(`/teacher/session/${sessionId}/end`, {}),
   registerFace: (body: { frames: string[] }) => apiPost("/student/face/register", body),
   faceStatus: () => apiGet("/student/face/status"),
+  studentActiveSession: () => apiGet("/student/attendance/active-session"),
   todayPresent: () => apiGet("/attendance/today/present-count"),
   studentSummary: () => apiGet("/student/attendance/summary"),
   assistant: (body: { question: string }) => apiPost("/assistant/ask", body),
+  markAttendanceWithBle: (body: { sessionId: string; token: string; frames: string[] }) =>
+    apiPost("/attendance/mark", body),
 };

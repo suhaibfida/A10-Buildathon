@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import AssistantPage from "./pages/AssistantPage"
 import AdminDashboard from "./pages/AdminDashboard"
+import Home from "./pages/Home"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import StudentActivate from "./pages/StudentActivate"
@@ -14,6 +15,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<RootRedirect />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/student/activate" element={<StudentActivate />} />

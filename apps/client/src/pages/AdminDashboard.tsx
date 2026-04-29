@@ -252,7 +252,7 @@ export default function AdminDashboard() {
             </select>
             <textarea
               className="min-h-24 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500"
-              placeholder="Student IDs, comma or line separated"
+              placeholder="Student IDs or roll numbers, comma or line separated"
               value={classStudents.studentIds}
               onChange={(e) => setClassStudents({ ...classStudents, studentIds: e.target.value })}
             />

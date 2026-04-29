@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { prisma } from "@repo/db/prisma"
+import { createBleSession, issueBleToken } from "./bleSession.js"
 
 export const startSession = async (req: Request, res: Response) => {
   try {
@@ -58,8 +59,12 @@ export const startSession = async (req: Request, res: Response) => {
     })
 
     if (activeSession) {
-      return res.status(400).json({
-        error: "A session is already active for this class"
+      createBleSession(activeSession.id, userId)
+      const blePayload = issueBleToken(activeSession.id)
+      return res.status(200).json({
+        message: "A session is already active for this class",
+        data: activeSession,
+        ble: blePayload
       })
     }
 
@@ -72,11 +77,14 @@ export const startSession = async (req: Request, res: Response) => {
         status: "OPEN"
       }
     })
+    createBleSession(session.id, userId)
+    const blePayload = issueBleToken(session.id)
 
     // 9. Response
     return res.status(201).json({
       message: "Session started successfully",
-      data: session
+      data: session,
+      ble: blePayload
     })
 
   } catch (error) {

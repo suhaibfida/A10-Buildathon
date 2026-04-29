@@ -17,19 +17,32 @@ function readFaceRegistered(result: ApiResult | undefined) {
 export default function StudentDashboard() {
   const [summary, setSummary] = useState<ApiResult>();
   const [faceStatus, setFaceStatus] = useState<ApiResult>();
+  const [activeSession, setActiveSession] = useState<ApiResult>();
   const [result, setResult] = useState<ApiResult>();
   const [faceFrames, setFaceFrames] = useState<string[]>([]);
   const [attendanceFrames, setAttendanceFrames] = useState<string[]>([]);
   const [sessionId, setSessionId] = useState("");
+  const [bleToken, setBleToken] = useState("");
+  const [sharedPayload, setSharedPayload] = useState("");
   const [isRegisteringFace, setIsRegisteringFace] = useState(false);
 
   const isFaceRegistered = readFaceRegistered(faceStatus);
 
+  const activeSessionId =
+    sessionId.trim() ||
+    ((activeSession?.data as { data?: { id?: string } } | undefined)?.data?.id ?? "").trim();
+
   useEffect(() => {
-    Promise.all([api.studentSummary(), api.faceStatus()])
-      .then(([summaryResponse, faceResponse]) => {
+    Promise.all([api.studentSummary(), api.faceStatus(), api.studentActiveSession()])
+      .then(([summaryResponse, faceResponse, activeSessionResponse]) => {
         setSummary(summaryResponse);
         setFaceStatus(faceResponse);
+        setActiveSession(activeSessionResponse);
+        const suggestedSessionId =
+          (activeSessionResponse.data as { data?: { id?: string } } | undefined)?.data?.id ?? "";
+        if (suggestedSessionId) {
+          setSessionId(suggestedSessionId);
+        }
       })
       .catch((error) => {
         const failure = {
@@ -39,8 +52,18 @@ export default function StudentDashboard() {
         };
         setSummary(failure);
         setFaceStatus(failure);
+        setActiveSession(failure);
       });
   }, []);
+
+  async function refreshActiveSession() {
+    const response = await api.studentActiveSession();
+    setActiveSession(response);
+    const suggestedSessionId = (response.data as { data?: { id?: string } } | undefined)?.data?.id ?? "";
+    if (suggestedSessionId) {
+      setSessionId(suggestedSessionId);
+    }
+  }
 
   async function registerFace() {
     if (faceFrames.length === 0 || isRegisteringFace) {
@@ -56,6 +79,57 @@ export default function StudentDashboard() {
       setFaceFrames([]);
       const statusResponse = await api.faceStatus();
       setFaceStatus(statusResponse);
+    }
+  }
+
+  async function submitAttendance() {
+    const targetSessionId = activeSessionId;
+    if (!targetSessionId || !bleToken.trim() || attendanceFrames.length === 0) {
+      return;
+    }
+
+    const response = await api.markAttendanceWithBle({
+      sessionId: targetSessionId,
+      token: bleToken.trim(),
+      frames: attendanceFrames,
+    });
+    setResult(response);
+  }
+
+  function applySharedPayload() {
+    try {
+      const parsed = JSON.parse(sharedPayload) as { sessionId?: string; token?: string; type?: string };
+      if (parsed.type && parsed.type !== "ATTENDANCE") {
+        setResult({
+          ok: false,
+          status: 0,
+          data: { error: "Invalid payload type" },
+        });
+        return;
+      }
+
+      if (!parsed.sessionId || !parsed.token) {
+        setResult({
+          ok: false,
+          status: 0,
+          data: { error: "Payload must include sessionId and token" },
+        });
+        return;
+      }
+
+      setSessionId(parsed.sessionId);
+      setBleToken(parsed.token);
+      setResult({
+        ok: true,
+        status: 0,
+        data: { message: "Token payload applied. Capture photos and submit attendance." },
+      });
+    } catch {
+      setResult({
+        ok: false,
+        status: 0,
+        data: { error: "Invalid JSON payload" },
+      });
     }
   }
 
@@ -100,19 +174,43 @@ export default function StudentDashboard() {
 
           <section className="max-w-2xl rounded-lg border border-zinc-800 bg-zinc-950 p-5">
             <h2 className="mb-3 font-semibold">Mark attendance</h2>
+            <div className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-md border border-zinc-800 bg-zinc-900/60 p-3 text-xs text-zinc-300">
+              <span>
+                Active session:{" "}
+                <strong>{(activeSession?.data as { data?: { id?: string } } | undefined)?.data?.id ?? "Not available"}</strong>
+              </span>
+              <Button className="h-8 border border-zinc-700 px-3 text-xs text-white hover:bg-zinc-900" onClick={refreshActiveSession}>
+                Refresh session
+              </Button>
+            </div>
             <Input
               className="mb-3 border border-zinc-700 bg-zinc-900 text-white"
-              placeholder="Active session ID"
+              placeholder="Optional: session ID override"
               value={sessionId}
               onChange={(e) => setSessionId(e.target.value)}
+            />
+            <textarea
+              className="mb-3 min-h-20 w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500"
+              placeholder='Paste teacher shared payload JSON: {"type":"ATTENDANCE","sessionId":"...","token":"..."}'
+              value={sharedPayload}
+              onChange={(e) => setSharedPayload(e.target.value)}
+            />
+            <Button className="mb-3 border border-zinc-700 text-white hover:bg-zinc-900" onClick={applySharedPayload}>
+              Apply shared payload
+            </Button>
+            <Input
+              className="mb-3 border border-zinc-700 bg-zinc-900 text-white"
+              placeholder="BLE token from classroom broadcast"
+              value={bleToken}
+              onChange={(e) => setBleToken(e.target.value)}
             />
             <CameraCapture maxFrames={2} onFramesChange={setAttendanceFrames} />
             <Button
               className="mt-3 w-full bg-emerald-600 text-white hover:bg-emerald-500"
-              disabled={!sessionId.trim() || attendanceFrames.length === 0}
-              onClick={() => api.submitAttendance({ sessionId, frames: attendanceFrames }).then(setResult)}
+              disabled={!activeSessionId || !bleToken.trim() || attendanceFrames.length === 0}
+              onClick={submitAttendance}
             >
-              Submit attendance frames
+              Submit BLE + face attendance
             </Button>
           </section>
           <StatusPanel result={result ?? summary} />

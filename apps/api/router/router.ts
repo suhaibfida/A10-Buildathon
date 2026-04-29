@@ -22,10 +22,18 @@ import {
 import { startSession } from "../controller/studentSession.js"
 import { markAttendance } from "../controller/markAttendance.js"
 import {endSession} from "../controller/endSession.js"
+import { teacherBleToken } from "../controller/teacherBle.js"
 import { faceRegistrationStatus, registerFace } from "../controller/registerFace.js"
 import { activateStudent } from "../controller/activateStudent.js"
 import { recognizeFace } from "../controller/facialRecognition.js"
-import { studentAttendanceSummary, todayPresentCount } from "../controller/attendanceInfo.js"
+import { markAttendanceWithBle } from "../controller/attendanceMark.js"
+import {
+  studentActiveSession,
+  studentAttendanceSummary,
+  teacherActiveSessionByClass,
+  teacherClasses,
+  todayPresentCount,
+} from "../controller/attendanceInfo.js"
 import { askAssistant } from "../controller/assistant.js"
 
 const router: Router = Router()
@@ -54,6 +62,7 @@ router.post("/students/activate", activateStudent)
 // Teacher
 router.post("/teacher/class/:classId/start-session", authMiddleware, authorizeRoles("TEACHER"), startSession)
 router.post("/teacher/session/:sessionId/attendance", authMiddleware, authorizeRoles("TEACHER"), markAttendance)
+router.get("/teacher/session/:sessionId/ble-token", authMiddleware, authorizeRoles("TEACHER"), teacherBleToken)
 
 // Student
 router.post(
@@ -74,15 +83,24 @@ router.post(
   authorizeRoles("STUDENT"),
   recognizeFace
 )
+router.post("/attendance/mark", authMiddleware, authorizeRoles("STUDENT"), markAttendanceWithBle)
 router.get(
   "/student/attendance/summary",
   authMiddleware,
   authorizeRoles("STUDENT"),
   studentAttendanceSummary
 )
+router.get(
+  "/student/attendance/active-session",
+  authMiddleware,
+  authorizeRoles("STUDENT"),
+  studentActiveSession
+)
 
 // Shared dashboard and assistant
 router.get("/attendance/today/present-count", authMiddleware, todayPresentCount)
+router.get("/teacher/classes", authMiddleware, authorizeRoles("TEACHER"), teacherClasses)
+router.get("/teacher/class/:classId/active-session", authMiddleware, authorizeRoles("TEACHER"), teacherActiveSessionByClass)
 router.post("/assistant/ask", authMiddleware, askAssistant)
 // endSession
 router.post(

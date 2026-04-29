@@ -6,7 +6,7 @@ function dashboardFor(user?: CurrentUser) {
   if (user?.role === "ADMIN") return "/admin";
   if (user?.role === "TEACHER") return "/teacher";
   if (user?.role === "STUDENT") return "/student";
-  return "/login";
+  return "/home";
 }
 
 export function RootRedirect() {
@@ -33,5 +33,5 @@ export function RootRedirect() {
   }
 
   const user = (result.data as { user?: CurrentUser } | undefined)?.user;
-  return <Navigate replace to={result.ok ? dashboardFor(user) : "/login"} />;
+  return <Navigate replace to={result.ok ? dashboardFor(user) : "/home"} />;
 }

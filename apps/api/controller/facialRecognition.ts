@@ -24,7 +24,7 @@ const cosineSimilarity = (a: number[], b: number[]) => {
 
 export const recognizeFace = async (req: Request, res: Response) => {
   try {
-    const { sessionId } = req.body
+    const { sessionId: sessionIdFromBody } = req.body
     const embedding = embeddingFromInput(req.body.embedding ?? req.body.frames)
     const userId = req.user?.userId
     const role = req.user?.role
@@ -35,25 +35,9 @@ export const recognizeFace = async (req: Request, res: Response) => {
       })
     }
 
-    if (!sessionId) {
-      return res.status(400).json({
-        error: "sessionId is required"
-      })
-    }
-
     if (!isValidEmbedding(embedding)) {
       return res.status(400).json({
         error: "Embedding array or camera frames are required"
-      })
-    }
-
-    const session = await prisma.attendanceSession.findUnique({
-      where: { id: sessionId }
-    })
-
-    if (!session || session.status !== "OPEN") {
-      return res.status(400).json({
-        error: "Invalid or closed session"
       })
     }
 
@@ -70,6 +54,30 @@ export const recognizeFace = async (req: Request, res: Response) => {
     if (currentStudent.status !== "ACTIVE") {
       return res.status(403).json({
         error: "Student account is not active"
+      })
+    }
+
+    if (!currentStudent.classId) {
+      return res.status(400).json({
+        error: "Student is not assigned to a class"
+      })
+    }
+
+    const session = sessionIdFromBody
+      ? await prisma.attendanceSession.findUnique({
+          where: { id: sessionIdFromBody }
+        })
+      : await prisma.attendanceSession.findFirst({
+          where: {
+            classId: currentStudent.classId,
+            status: "OPEN"
+          },
+          orderBy: { createdAt: "desc" }
+        })
+
+    if (!session || session.status !== "OPEN") {
+      return res.status(400).json({
+        error: "No active attendance session found"
       })
     }
 
@@ -123,7 +131,7 @@ export const recognizeFace = async (req: Request, res: Response) => {
     const attendance = await prisma.attendance.create({
       data: {
         userId: bestMatchUserId,
-        sessionId,
+        sessionId: session.id,
         status: "PRESENT",
         confidence: bestScore
       }

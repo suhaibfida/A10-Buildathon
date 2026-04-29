@@ -22,8 +22,18 @@ export const addStudentsToClass = async (req: Request, res: Response) => {
       })
     }
 
-    // 3. Remove duplicate IDs (important fix)
-    const uniqueStudentIds = [...new Set(studentIds)]
+    // 3. Normalize and deduplicate identifiers (user ids or roll numbers)
+    const identifiers = [...new Set(
+      studentIds
+        .map((value: unknown) => (typeof value === "string" ? value.trim() : ""))
+        .filter(Boolean)
+    )]
+
+    if (identifiers.length === 0) {
+      return res.status(400).json({
+        error: "studentIds must include at least one valid identifier"
+      })
+    }
 
     // 4. Check if class exists
     const existingClass = await prisma.class.findUnique({
@@ -39,14 +49,27 @@ export const addStudentsToClass = async (req: Request, res: Response) => {
     // 5. Fetch users
     const users = await prisma.user.findMany({
       where: {
-        id: { in: uniqueStudentIds }
+        OR: [
+          { id: { in: identifiers } },
+          { rollNumber: { in: identifiers } }
+        ]
       }
     })
 
     // 6. Ensure all users exist
-    if (users.length !== uniqueStudentIds.length) {
+    const matchedIdentifiers = new Set<string>()
+    for (const user of users) {
+      matchedIdentifiers.add(user.id)
+      if (user.rollNumber) {
+        matchedIdentifiers.add(user.rollNumber)
+      }
+    }
+
+    const missingIdentifiers = identifiers.filter((value) => !matchedIdentifiers.has(value))
+    if (missingIdentifiers.length > 0) {
       return res.status(400).json({
-        error: "Some users not found"
+        error: "Some students were not found",
+        missingIdentifiers
       })
     }
 
@@ -83,7 +106,7 @@ export const addStudentsToClass = async (req: Request, res: Response) => {
     // 10. Assign students (bulk update)
     const result = await prisma.user.updateMany({
       where: {
-        id: { in: uniqueStudentIds }
+        id: { in: users.map((user) => user.id) }
       },
       data: {
         classId: classId
