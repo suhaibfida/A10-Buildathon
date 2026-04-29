@@ -1,84 +1,162 @@
-import { useState } from "react"
-import axios from "axios"
+import { useMemo, useState, type FormEvent } from "react";
+import { Link } from "react-router-dom";
+import { Button, Input } from "@repo/ui";
+import { api, type ApiResult } from "../api/client";
+import AppShell from "../components/AppShell";
+import { StatusPanel } from "../components/StatusPanel";
 
-export default function Signup() {
-  const [name, setName] = useState("")
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [role, setRole] = useState("STUDENT")
-  const [rollNumber, setRollNumber] = useState("")
+type RegisterRole = "STUDENT" | "TEACHER";
 
-  const handleSignup = async () => {
+export default function Register() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [role, setRole] = useState<RegisterRole>("STUDENT");
+  const [rollNumber, setRollNumber] = useState("");
+  const [result, setResult] = useState<ApiResult>();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const canSubmit = useMemo(() => {
+    if (!name.trim() || !email.trim() || password.length < 6) {
+      return false;
+    }
+
+    return role === "TEACHER" || Boolean(rollNumber.trim());
+  }, [email, name, password, role, rollNumber]);
+
+  async function handleRegister(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!canSubmit || isSubmitting) {
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const res = await axios.post(
-        "http://localhost:3000/auth/register",
-        {
-          name,
-          email,
-          password,
-          role,
-          rollNumber: role === "STUDENT" ? rollNumber : undefined,
-        },
-        { withCredentials: true }
-      )
+      const response = await api.register({
+        name: name.trim(),
+        email: email.trim(),
+        password,
+        role,
+        rollNumber: role === "STUDENT" ? rollNumber.trim() : undefined,
+      });
 
-      console.log("SUCCESS:", res.data)
+      setResult(response);
 
-    } catch (err) {
-      console.log("ERROR:", err)
+      if (response.ok) {
+        setName("");
+        setEmail("");
+        setPassword("");
+        setRollNumber("");
+        setRole("STUDENT");
+      }
+    } catch (error) {
+      setResult({
+        ok: false,
+        status: 0,
+        data: error instanceof Error ? error.message : "Could not register user",
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <div className="bg-gray-900 p-6 rounded-xl w-80 space-y-4 text-white">
-
-        <h1 className="text-2xl font-bold text-center">Signup</h1>
-
-        <input
-          className="w-full p-2 rounded bg-gray-800"
-          placeholder="Name"
-          onChange={(e) => setName(e.target.value)}
-        />
-
-        <input
-          className="w-full p-2 rounded bg-gray-800"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          className="w-full p-2 rounded bg-gray-800"
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <select
-          className="w-full p-2 rounded bg-gray-800"
-          onChange={(e) => setRole(e.target.value)}
+    <AppShell title="Create Account" subtitle="Register as a teacher or student to start using attendance tools.">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
+        <form
+          className="rounded-lg border border-zinc-800 bg-zinc-950 p-6"
+          onSubmit={handleRegister}
         >
-          <option value="STUDENT">Student</option>
-          <option value="TEACHER">Teacher</option>
-          <option value="ADMIN">Admin</option>
-        </select>
+          <div className="grid gap-4">
+            <label className="grid gap-2 text-sm font-medium text-zinc-200">
+              Name
+              <Input
+                placeholder="Full name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+              />
+            </label>
 
-        {role === "STUDENT" && (
-          <input
-            className="w-full p-2 rounded bg-gray-800"
-            placeholder="Roll Number"
-            onChange={(e) => setRollNumber(e.target.value)}
-          />
-        )}
+            <label className="grid gap-2 text-sm font-medium text-zinc-200">
+              Email
+              <Input
+                type="email"
+                placeholder="name@example.com"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+              />
+            </label>
 
-        <button
-          className="w-full bg-green-500 p-2 rounded"
-          onClick={handleSignup}
-        >
-          Signup
-        </button>
+            <label className="grid gap-2 text-sm font-medium text-zinc-200">
+              Password
+              <Input
+                type="password"
+                placeholder="At least 6 characters"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+              />
+            </label>
 
+            <div className="grid gap-2">
+              <span className="text-sm font-medium text-zinc-200">Role</span>
+              <div className="grid grid-cols-2 gap-2 rounded-md border border-zinc-800 bg-zinc-900 p-1">
+                {(["STUDENT", "TEACHER"] as const).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={`h-10 rounded px-3 text-sm font-medium transition ${
+                      role === item
+                        ? "bg-white text-zinc-950"
+                        : "text-zinc-300 hover:bg-zinc-800"
+                    }`}
+                    onClick={() => setRole(item)}
+                  >
+                    {item === "STUDENT" ? "Student" : "Teacher"}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {role === "STUDENT" && (
+              <label className="grid gap-2 text-sm font-medium text-zinc-200">
+                Roll Number
+                <Input
+                  placeholder="Student roll number"
+                  value={rollNumber}
+                  onChange={(event) => setRollNumber(event.target.value)}
+                />
+              </label>
+            )}
+
+            <Button
+              className="bg-blue-600 text-white hover:bg-blue-500"
+              disabled={!canSubmit || isSubmitting}
+              type="submit"
+            >
+              {isSubmitting ? "Creating..." : "Create account"}
+            </Button>
+          </div>
+
+          <p className="mt-4 text-sm text-zinc-400">
+            Already registered?{" "}
+            <Link className="text-blue-300 hover:underline" to="/login">
+              Login
+            </Link>
+          </p>
+
+          <StatusPanel result={result} />
+        </form>
+
+        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+          <h2 className="text-lg font-semibold">Signup rules</h2>
+          <div className="mt-4 grid gap-4 text-sm leading-6 text-zinc-400">
+            <p>Student accounts require a roll number because the backend validates it for that role.</p>
+            <p>Teacher accounts only need name, email, password, and role.</p>
+            <p>After successful registration, use the login page to enter the dashboard for your role.</p>
+          </div>
+        </section>
       </div>
-    </div>
-  )
+    </AppShell>
+  );
 }

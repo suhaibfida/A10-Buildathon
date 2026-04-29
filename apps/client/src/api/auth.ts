@@ -1,5 +1,5 @@
 export const registerUser = async (name: string, email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/auth/register", {
+    const res = await fetch("http://localhost:3000/api/v1/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -12,7 +12,7 @@ export const registerUser = async (name: string, email: string, password: string
   }
   
   export const loginUser = async (email: string, password: string) => {
-    const res = await fetch("http://localhost:3000/auth/login", {
+    const res = await fetch("http://localhost:3000/api/v1/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

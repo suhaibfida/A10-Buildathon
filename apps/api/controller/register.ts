@@ -38,7 +38,7 @@ export const register= ( async (req:Request, res:Response) => {
           email,
           passwordHash: hashedPassword,
           role,
-          status: "ACTIVE",
+          status: role === "STUDENT" ? "NOT_REGISTERED" : "ACTIVE",
   
           // only students will have rollNumber
           rollNumber: role === "STUDENT" ? rollNumber : null,
@@ -91,6 +91,12 @@ export const login=async (req:Request, res:Response) => {
       if (!user || !user.passwordHash) {
         return res.status(400).json({
           error: "Invalid credentials",
+        })
+      }
+
+      if (user.status !== "ACTIVE") {
+        return res.status(403).json({
+          error: "Account is not active",
         })
       }
   

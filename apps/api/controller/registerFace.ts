@@ -1,60 +1,58 @@
-// src/modules/face/registerFace.ts
-
 import { Request, Response } from "express"
 import { prisma } from "@repo/db/prisma"
+import { embeddingFromInput, isValidEmbedding } from "./faceEmbedding.js"
 
 export const registerFace = async (req: Request, res: Response) => {
   try {
     const userId = req.user?.userId
     const role = req.user?.role
-    const { embedding } = req.body
+    const embedding = embeddingFromInput(req.body.embedding ?? req.body.frames)
 
-    // 1. Auth check
     if (!userId || !role) {
       return res.status(401).json({
         error: "Unauthorized"
       })
     }
 
-    // 2. Only STUDENTS allowed
     if (role !== "STUDENT") {
       return res.status(403).json({
         error: "Only students can register face"
       })
     }
 
-    // 3. Validate embedding
-    if (!embedding || !Array.isArray(embedding)) {
-      return res.status(400).json({
-        error: "Embedding array is required"
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { status: true }
+    })
+
+    if (!user || user.status !== "ACTIVE") {
+      return res.status(403).json({
+        error: "Student account is not active"
       })
     }
 
-    if (!embedding.every(v => typeof v === "number")) {
+    if (!embedding) {
       return res.status(400).json({
-        error: "Embedding must be numbers only"
+        error: "Embedding array or camera frames are required"
       })
     }
 
-    // Optional: enforce embedding size (face-api.js → 128)
-    if (embedding.length !== 128) {
+    if (!isValidEmbedding(embedding)) {
       return res.status(400).json({
         error: "Invalid embedding size"
       })
     }
 
-    // 4. Limit embeddings per user (max 5)
     const existingCount = await prisma.faceEmbedding.count({
       where: { userId }
     })
 
-    if (existingCount >= 5) {
+    if (existingCount >= 1) {
       return res.status(400).json({
-        error: "Maximum face data already registered (limit: 5)"
+        error: "Face is already registered for this account"
       })
     }
 
-    // 5. Store embedding
     const face = await prisma.faceEmbedding.create({
       data: {
         userId,
@@ -69,6 +67,34 @@ export const registerFace = async (req: Request, res: Response) => {
 
   } catch (error) {
     console.error("Register Face Error:", error)
+
+    return res.status(500).json({
+      error: "Internal server error"
+    })
+  }
+}
+
+export const faceRegistrationStatus = async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.userId
+    const role = req.user?.role
+
+    if (!userId || role !== "STUDENT") {
+      return res.status(403).json({
+        error: "Only students can check face registration status"
+      })
+    }
+
+    const count = await prisma.faceEmbedding.count({
+      where: { userId }
+    })
+
+    return res.status(200).json({
+      registered: count > 0,
+      count
+    })
+  } catch (error) {
+    console.error("Face Status Error:", error)
 
     return res.status(500).json({
       error: "Internal server error"

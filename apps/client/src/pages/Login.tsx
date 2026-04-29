@@ -1,51 +1,68 @@
-import { useState } from "react"
-import axios from "axios"
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Input } from "@repo/ui";
+import { api, type CurrentUser } from "../api/client";
+import AppShell from "../components/AppShell";
+import { StatusPanel } from "../components/StatusPanel";
+
+function dashboardFor(user?: CurrentUser) {
+  if (user?.role === "ADMIN") return "/admin";
+  if (user?.role === "TEACHER") return "/teacher";
+  if (user?.role === "STUDENT") return "/student";
+  return undefined;
+}
 
 export default function Login() {
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [result, setResult] = useState<Awaited<ReturnType<typeof api.login>>>();
+  const navigate = useNavigate();
 
-  const handleLogin = async () => {
-    try {
-      const res = await axios.post(
-        "http://localhost:3000/auth/login",
-        { email, password },
-        { withCredentials: true }
-      )
+  useEffect(() => {
+    api.me().then((response) => {
+      const user = (response.data as { user?: CurrentUser } | undefined)?.user;
+      const dashboard = response.ok ? dashboardFor(user) : undefined;
+      if (dashboard) {
+        navigate(dashboard, { replace: true });
+      }
+    }).catch(() => undefined);
+  }, [navigate]);
 
-      console.log("SUCCESS:", res.data)
-    } catch (err) {
-      console.log("ERROR:", err)
+  async function handleLogin() {
+    const response = await api.login({ email, password });
+    setResult(response);
+
+    if (!response.ok) {
+      return;
     }
+
+    const user = (response.data as { user?: CurrentUser } | undefined)?.user;
+    navigate(dashboardFor(user) ?? "/student");
   }
 
   return (
-    <div className="h-screen flex items-center justify-center bg-black">
-      <div className="bg-gray-900 p-6 rounded-xl w-80 space-y-4 text-white shadow-lg">
-        
-        <h1 className="text-2xl font-bold text-center">Login</h1>
-
-        <input
-          className="w-full p-2 rounded bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
-          placeholder="Email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-
-        <input
-          className="w-full p-2 rounded bg-gray-800 outline-none focus:ring-2 focus:ring-blue-500"
-          type="password"
-          placeholder="Password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-
-        <button
-          className="w-full bg-blue-500 hover:bg-blue-600 p-2 rounded transition"
-          onClick={handleLogin}
-        >
-          Login
-        </button>
-
+    <AppShell title="Login" subtitle="Sign in and continue to your role-specific dashboard.">
+      <div className="max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+        <div className="grid gap-4">
+          <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
+          <Input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+          />
+          <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={handleLogin}>
+            Login
+          </Button>
+        </div>
+        <p className="mt-4 text-sm text-zinc-400">
+          Student not active yet?{" "}
+          <Link className="text-blue-300 hover:underline" to="/student/activate">
+            Activate with roll number
+          </Link>
+        </p>
+        <StatusPanel result={result} />
       </div>
-    </div>
-  )
+    </AppShell>
+  );
 }

@@ -4,7 +4,7 @@ import { prisma } from "@repo/db/prisma"
 export const startSession = async (req: Request, res: Response) => {
   try {
     // 1. Normalize classId
-    const rawClassId = req.body.classId
+    const rawClassId = req.params.classId ?? req.body.classId
     const classId = Array.isArray(rawClassId) ? rawClassId[0] : rawClassId
 
     // 2. Get logged-in user (from auth middleware)
