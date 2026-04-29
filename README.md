@@ -4,6 +4,8 @@
 <img width="1600" height="825" alt="WhatsApp Image 2026-04-29 at 12 21 47 PM" src="https://github.com/user-attachments/assets/5b9a404e-6a8a-4038-ac36-a326c67eb09a" />
 <img width="1600" height="813" alt="WhatsApp Image 2026-04-29 at 12 24 53 PM" src="https://github.com/user-attachments/assets/85015fe9-9778-4d44-abfc-ffbd23fc0cca" />
 <img width="1876" height="829" alt="image" src="https://github.com/user-attachments/assets/dab17ec5-2ffc-4892-aee7-ac6ef33a6d7b" />
+<img width="1675" height="913" alt="image" src="https://github.com/user-attachments/assets/94dc169b-1d5e-4686-9cae-2433e1e72714" />
+
 An AI-powered attendance platform using **face recognition + BLE proximity + session-based verification**.
 Built with a modern **TurboRepo + Bun + TypeScript** stack.
 
