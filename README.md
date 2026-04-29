@@ -1,159 +1,258 @@
-# Turborepo starter
+# 🚀 AI0 Attendance System (TurboRepo Monorepo)
 
-This Turborepo starter is maintained by the Turborepo core team.
+An AI-powered attendance platform using **face recognition + BLE proximity + session-based verification**.
+Built with a modern **TurboRepo + Bun + TypeScript** stack.
 
-## Using this example
+---
 
-Run the following command:
+## 🧠 Features
 
-```sh
-npx create-turbo@latest
+* 🔐 Admin-controlled system (no public signup)
+* 👨‍🏫 Teacher session-based attendance (time-bound)
+* 🎓 Student face recognition (AI embeddings)
+* 📡 BLE proximity verification (anti-cheating)
+* 📊 Daily attendance analytics
+* 🤖 AI Assistant (RAG-based queries)
+* ⚡ Monorepo architecture with TurboRepo
+
+---
+
+## 🏗️ Monorepo Structure
+
+```
+.
+├── apps/
+│   ├── web/            # Frontend (React / Next.js)
+│   ├── backend/        # Express API (Bun + TypeScript)
+│
+├── packages/
+│   ├── db/             # Prisma schema + client
+│   ├── ui/             # Shared UI components
+│   ├── config/         # Shared configs (tsconfig, eslint)
+│
+├── turbo.json
+├── package.json
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## ⚙️ Tech Stack
 
-### Apps and Packages
+### 🖥️ Backend
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+* Bun (runtime)
+* TypeScript
+* Express.js
+* Prisma ORM
+* PostgreSQL
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+### 🤖 AI / ML
 
-### Utilities
+* Face Recognition: face-api.js
+* Embeddings: 128-d face vectors
+* Similarity: Cosine similarity
 
-This Turborepo has some additional tools already setup for you:
+### 📱 Frontend
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+* React / Next.js
+* Tailwind CSS
 
-### Build
+### 📡 Proximity
 
-To build all apps and packages, run the following command:
+* BLE (Bluetooth Low Energy)
+* react-native-ble-plx (mobile)
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+### 🤖 AI Assistant
 
-```sh
-cd my-turborepo
-turbo build
+* RAG (Retrieval Augmented Generation)
+* Gemini / LLM (for queries, not face recognition)
+
+### 🧱 Monorepo
+
+* TurboRepo
+* Bun Workspaces
+
+---
+
+## 🚀 Getting Started
+
+### 1️⃣ Clone the repo
+
+```bash
+git clone https://github.com/your-username/ai-attendance.git
+cd ai-attendance
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-bun dlx turbo build
-bun exec turbo build
+### 2️⃣ Install dependencies (Bun)
+
+```bash
+bun install
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+### 3️⃣ Setup environment variables
 
-```sh
-turbo build --filter=docs
+Create `.env` in `packages/db`:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/attendance"
+
+EMBEDDING_VECTOR_SIZE=128
+EMBEDDING_API_URL=
+EMBEDDING_API_KEY=
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
+### 4️⃣ Setup database
+
+```bash
+cd packages/db
+bun prisma migrate dev --name init
 ```
 
-### Develop
+---
 
-To develop all apps and packages, run the following command:
+### 5️⃣ Generate Prisma client
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+```bash
+bun prisma generate
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
+### 6️⃣ Run development servers
+
+From root:
+
+```bash
+bun run dev
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+Turbo will run:
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+* backend
+* frontend
 
-```sh
-turbo dev --filter=web
+---
+
+## 🤖 Face Recognition Flow
+
+```
+Camera → face-api.js → embedding (vector)
+        ↓
+Compare with stored embeddings
+        ↓
+Cosine similarity → confidence score
+        ↓
+Mark attendance
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
+## 📡 BLE Attendance Flow
+
+```
+Teacher starts session
+→ BLE broadcast (sessionId + token)
+
+Student scans BLE
+→ detects session
+
+Student captures face
+→ sends to backend
+
+Backend:
+→ validate session
+→ validate BLE token
+→ match face
+→ mark attendance
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## 📊 Attendance Logic
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+* Session-based (5 minutes)
+* One attendance per student per session
+* Daily count = unique students marked PRESENT
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+---
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## 🤖 AI Assistant
 
-```sh
-cd my-turborepo
-turbo login
+Supports queries like:
+
+* "What is my attendance?"
+* "Who teaches my class?"
+* "Show today's attendance stats"
+
+Uses:
+
+* User context (JWT)
+* RAG documents
+* Database queries
+
+---
+
+## 🔐 Security Design
+
+* No public signup
+* Role-based access (Admin / Teacher / Student)
+* BLE token rotation (anti-replay)
+* Face confidence thresholds
+* Session time limits
+
+---
+
+## 📌 Scripts
+
+```bash
+bun run dev        # start all apps (turbo)
+bun run build      # build all apps
+bun run lint       # lint code
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
+## 🧠 Architecture
+
+```
+Frontend → Backend API → AI (face-api)
+                        ↓
+                    PostgreSQL
+                        ↓
+                    RAG + AI Assistant
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## ⚠️ Notes
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+* face-api.js runs locally (no API key required)
+* Use good lighting for better accuracy
+* BLE works best on mobile apps (not web)
 
-```sh
-turbo link
-```
+---
 
-Without global `turbo`:
+## 🚀 Future Improvements
 
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
+* Switch to InsightFace (better accuracy)
+* Add GPU acceleration
+* Use vector database (Pinecone)
+* Advanced anti-spoofing (liveness detection)
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+## 🤝 Contributing
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+Pull requests are welcome. For major changes, open an issue first.
+
+---
+
+## 📄 License
+
+MIT License
