@@ -1,4 +1,4 @@
-#  AI0 Attendance System (TurboRepo Monorepo)
+#  A10 Attendance System (TurboRepo Monorepo)
 <img width="15083" height="6941" alt="imagee" src="https://github.com/user-attachments/assets/51e693fa-a341-4cd0-98de-42b8ff76eb17" />
 <img width="1763" height="882" alt="image" src="https://github.com/user-attachments/assets/d271dc38-3d39-43d8-a96e-6243a40a86d1" />
 <img width="1681" height="768" alt="image" src="https://github.com/user-attachments/assets/1d7796d9-f805-4f7c-af4c-b177f794d25a" />
