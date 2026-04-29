@@ -75,6 +75,10 @@ export function apiPatch(path: string, body: unknown) {
   return apiRequest("PATCH", path, body);
 }
 
+export function apiDelete(path: string) {
+  return apiRequest("DELETE", path);
+}
+
 export const api = {
   me: () => apiGet("/auth/me"),
   register: (body: {
@@ -111,6 +115,10 @@ export const api = {
     apiPost(`/admin/class/${classId}/students`, body),
   assignTeacherToClass: (classId: string, body: { teacherId: string }) =>
     apiPost(`/admin/class/${classId}/teacher`, body),
+  listRagDocuments: () => apiGet("/admin/rag-documents"),
+  createRagDocument: (body: { title: string; content: string; type: "GENERAL" | "DEPARTMENT" | "TEACHER" }) =>
+    apiPost("/admin/rag-documents", body),
+  deleteRagDocument: (documentId: string) => apiDelete(`/admin/rag-documents/${documentId}`),
   teacherClasses: () => apiGet("/teacher/classes"),
   teacherActiveSession: (classId: string) => apiGet(`/teacher/class/${classId}/active-session`),
   startSession: (classId: string, body: { durationMinutes: number }) =>

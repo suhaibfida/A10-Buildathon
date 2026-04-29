@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Input } from "@repo/ui";
 import { api, type ApiResult, type BlePayload, type TeacherClass } from "../api/client";
+import AssistantShortcut from "../components/AssistantShortcut";
 import AppShell from "../components/AppShell";
 import { StatusPanel } from "../components/StatusPanel";
 
@@ -191,6 +192,7 @@ export default function TeacherDashboard() {
         </section>
       </div>
       <StatusPanel result={result} />
+      <AssistantShortcut />
     </AppShell>
   );
 }

@@ -31,12 +31,28 @@ type AdminUser = {
   departmentId?: string | null;
 };
 
+type RagType = "GENERAL" | "DEPARTMENT" | "TEACHER";
+
+type RagDocument = {
+  id: string;
+  title: string;
+  content: string;
+  preview?: string;
+  type: RagType;
+  createdAt: string;
+};
+
 const inputClass = "border border-zinc-700 bg-zinc-900 text-white placeholder:text-zinc-500";
 const selectClass = "h-10 rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm text-white";
 const statusOptions: { value: UserStatus; label: string }[] = [
   { value: "NOT_REGISTERED", label: "Not approved" },
   { value: "ACTIVE", label: "Approved" },
   { value: "BLOCKED", label: "Blocked" },
+];
+const ragTypeOptions: { value: RagType; label: string }[] = [
+  { value: "GENERAL", label: "General" },
+  { value: "DEPARTMENT", label: "Department" },
+  { value: "TEACHER", label: "Teacher only" },
 ];
 
 function readList<T>(result: ApiResult) {
@@ -56,6 +72,7 @@ export default function AdminDashboard() {
   const [classes, setClasses] = useState<ClassRecord[]>([]);
   const [teachers, setTeachers] = useState<AdminUser[]>([]);
   const [students, setStudents] = useState<AdminUser[]>([]);
+  const [ragDocuments, setRagDocuments] = useState<RagDocument[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [department, setDepartment] = useState("");
@@ -77,6 +94,12 @@ export default function AdminDashboard() {
     studentId: "",
     status: "ACTIVE" as UserStatus,
   });
+  const [ragForm, setRagForm] = useState({
+    title: "",
+    content: "",
+    type: "GENERAL" as RagType,
+  });
+  const [isSavingRag, setIsSavingRag] = useState(false);
 
   const pendingStudents = useMemo(
     () => students.filter((item) => item.status !== "ACTIVE"),
@@ -85,20 +108,22 @@ export default function AdminDashboard() {
 
   async function refreshAdminData() {
     setIsLoading(true);
-    const [departmentResult, classResult, teacherResult, studentResult] = await Promise.all([
+    const [departmentResult, classResult, teacherResult, studentResult, ragResult] = await Promise.all([
       api.listDepartments(),
       api.listClasses(),
       api.listTeachers(),
       api.listStudents(),
+      api.listRagDocuments(),
     ]);
 
     setDepartments(readList<Department>(departmentResult));
     setClasses(readList<ClassRecord>(classResult));
     setTeachers(readList<AdminUser>(teacherResult));
     setStudents(readList<AdminUser>(studentResult));
+    setRagDocuments(readList<RagDocument>(ragResult));
     setIsLoading(false);
 
-    const failed = [departmentResult, classResult, teacherResult, studentResult].find((item) => !item.ok);
+    const failed = [departmentResult, classResult, teacherResult, studentResult, ragResult].find((item) => !item.ok);
     if (failed) {
       setResult(failed);
     }
@@ -110,6 +135,31 @@ export default function AdminDashboard() {
 
     if (response.ok) {
       after?.();
+      await refreshAdminData();
+    }
+  }
+
+  async function saveRagDocument() {
+    setIsSavingRag(true);
+    const response = await api.createRagDocument({
+      title: ragForm.title.trim(),
+      content: ragForm.content.trim(),
+      type: ragForm.type,
+    });
+    setResult(response);
+    setIsSavingRag(false);
+
+    if (response.ok) {
+      setRagForm({ title: "", content: "", type: "GENERAL" });
+      await refreshAdminData();
+    }
+  }
+
+  async function removeRagDocument(documentId: string) {
+    const response = await api.deleteRagDocument(documentId);
+    setResult(response);
+
+    if (response.ok) {
       await refreshAdminData();
     }
   }
@@ -138,6 +188,77 @@ export default function AdminDashboard() {
         <Metric label="Teachers" value={teachers.length} />
         <Metric label="Pending Students" value={pendingStudents.length} />
       </div>
+
+      <section className="mb-5 rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <h2 className="font-semibold">College knowledge base</h2>
+            <p className="mt-1 text-sm text-zinc-400">
+              Add official college information. The API splits it into chunks, embeds it with Gemini, and uses it for assistant answers.
+            </p>
+          </div>
+          <span className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+            {ragDocuments.length} chunks
+          </span>
+        </div>
+        <div className="mt-4 grid gap-3">
+          <div className="grid gap-3 md:grid-cols-[1fr_180px]">
+            <Input
+              className={inputClass}
+              placeholder="Title"
+              value={ragForm.title}
+              onChange={(e) => setRagForm({ ...ragForm, title: e.target.value })}
+            />
+            <select
+              className={selectClass}
+              value={ragForm.type}
+              onChange={(e) => setRagForm({ ...ragForm, type: e.target.value as RagType })}
+            >
+              {ragTypeOptions.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <textarea
+            className="min-h-40 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm leading-6 text-white placeholder:text-zinc-500"
+            placeholder="Paste college policies, department notes, office hours, fees, placement info, exam rules, or other official data."
+            value={ragForm.content}
+            onChange={(e) => setRagForm({ ...ragForm, content: e.target.value })}
+          />
+          <Button
+            className="w-full bg-emerald-600 text-white hover:bg-emerald-500 sm:w-auto"
+            disabled={isSavingRag || !ragForm.title.trim() || !ragForm.content.trim()}
+            onClick={saveRagDocument}
+          >
+            {isSavingRag ? "Embedding..." : "Add to assistant"}
+          </Button>
+        </div>
+        <div className="mt-5 grid gap-3 lg:grid-cols-2">
+          {ragDocuments.length ? (
+            ragDocuments.map((item) => (
+              <section key={item.id} className="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <h3 className="text-sm font-semibold text-zinc-100">{item.title}</h3>
+                    <p className="mt-1 text-xs text-zinc-500">{item.type}</p>
+                  </div>
+                  <Button
+                    className="h-8 border border-zinc-700 px-3 text-xs text-white hover:bg-zinc-950"
+                    onClick={() => removeRagDocument(item.id)}
+                  >
+                    Delete
+                  </Button>
+                </div>
+                <p className="mt-3 line-clamp-4 text-xs leading-5 text-zinc-400">{item.preview ?? item.content}</p>
+              </section>
+            ))
+          ) : (
+            <p className="text-sm text-zinc-400">No assistant knowledge added yet.</p>
+          )}
+        </div>
+      </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
         <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">

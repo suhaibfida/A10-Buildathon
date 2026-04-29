@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Input } from "@repo/ui";
 import { api, type ApiResult } from "../api/client";
+import AssistantShortcut from "../components/AssistantShortcut";
 import AppShell from "../components/AppShell";
 import CameraCapture from "../components/CameraCapture";
 import { StatusPanel } from "../components/StatusPanel";
@@ -216,6 +217,7 @@ export default function StudentDashboard() {
           <StatusPanel result={result ?? summary} />
         </>
       )}
+      <AssistantShortcut />
     </AppShell>
   );
 }
