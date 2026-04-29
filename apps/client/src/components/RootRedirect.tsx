@@ -26,7 +26,7 @@ export function RootRedirect() {
 
   if (!result) {
     return (
-      <main className="grid min-h-screen place-items-center bg-zinc-950 text-sm text-zinc-300">
+      <main className="app-shell grid place-items-center text-sm text-zinc-300">
         Loading...
       </main>
     );

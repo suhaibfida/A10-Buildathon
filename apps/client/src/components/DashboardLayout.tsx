@@ -11,24 +11,24 @@ export default function DashboardLayout({
   children: ReactNode;
 }) {
   return (
-    <main className="min-h-screen bg-black px-4 py-8 text-white sm:px-6 lg:px-8">
+    <main className="app-shell px-4 py-8 text-white sm:px-6 lg:px-8">
       <div className="mx-auto max-w-6xl">
-        <header className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-zinc-800 pb-6">
+        <header className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-slate-700/50 pb-6">
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
             <p className="mt-2 text-sm text-zinc-400">{subtitle}</p>
           </div>
           <nav className="flex flex-wrap gap-2 text-sm">
-            <Link className="rounded-md border border-zinc-700 px-3 py-2 text-zinc-200 hover:bg-zinc-900" to="/admin">
+            <Link className="app-muted-button rounded-md px-3 py-2 text-sm" to="/admin">
               Admin
             </Link>
-            <Link className="rounded-md border border-zinc-700 px-3 py-2 text-zinc-200 hover:bg-zinc-900" to="/teacher">
+            <Link className="app-muted-button rounded-md px-3 py-2 text-sm" to="/teacher">
               Teacher
             </Link>
-            <Link className="rounded-md border border-zinc-700 px-3 py-2 text-zinc-200 hover:bg-zinc-900" to="/student">
+            <Link className="app-muted-button rounded-md px-3 py-2 text-sm" to="/student">
               Student
             </Link>
-            <Link className="rounded-md border border-zinc-700 px-3 py-2 text-zinc-200 hover:bg-zinc-900" to="/login">
+            <Link className="app-muted-button rounded-md px-3 py-2 text-sm" to="/login">
               Login
             </Link>
           </nav>

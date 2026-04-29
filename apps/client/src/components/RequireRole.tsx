@@ -38,7 +38,7 @@ export function RequireRole({
   if (!result) {
     return (
       <AppShell title="Checking Access" subtitle="Verifying your session before opening this page.">
-        <section className="max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6 text-sm text-zinc-300">
+        <section className="app-card max-w-md p-6 text-sm text-zinc-300">
           Loading...
         </section>
       </AppShell>
@@ -49,10 +49,10 @@ export function RequireRole({
   if (!result.ok || !user) {
     return (
       <AppShell title="Login Required" subtitle="This page is available only after signing in.">
-        <section className="max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+        <section className="app-card max-w-md p-6">
           <p className="text-sm text-zinc-300">Please login with an authorized account.</p>
           <Link
-            className="mt-4 inline-flex h-10 items-center justify-center rounded-md bg-blue-600 px-4 text-sm font-medium text-white hover:bg-blue-500"
+            className="app-primary-button mt-4 inline-flex h-10 items-center justify-center rounded-md px-4 text-sm font-medium"
             to="/login"
           >
             Go to login

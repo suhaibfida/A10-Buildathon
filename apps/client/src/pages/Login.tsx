@@ -42,7 +42,7 @@ export default function Login() {
 
   return (
     <AppShell title="Login" subtitle="Sign in and continue to your role-specific dashboard.">
-      <div className="max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+      <div className="app-card max-w-md p-6">
         <div className="grid gap-4">
           <Input placeholder="Email" value={email} onChange={(event) => setEmail(event.target.value)} />
           <Input
@@ -51,7 +51,7 @@ export default function Login() {
             value={password}
             onChange={(event) => setPassword(event.target.value)}
           />
-          <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={handleLogin}>
+          <Button className="app-primary-button" onClick={handleLogin}>
             Login
           </Button>
         </div>

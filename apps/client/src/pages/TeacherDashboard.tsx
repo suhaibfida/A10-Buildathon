@@ -112,14 +112,14 @@ export default function TeacherDashboard() {
       subtitle="Start a 5-minute class session. Students submit camera frames during the active window."
     >
       <div className="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Start class session</h2>
           <p className="mt-1 text-sm text-zinc-400">
             The backend owns the session timer and validates teacher/class access.
           </p>
           <div className="mt-4 grid gap-3">
             <select
-              className="h-10 rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm text-white"
+              className="app-input h-10 rounded-md px-3 text-sm"
               value={classId}
               onChange={(e) => setClassId(e.target.value)}
             >
@@ -130,17 +130,17 @@ export default function TeacherDashboard() {
                 </option>
               ))}
             </select>
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={startSession}>
+            <Button className="app-primary-button" onClick={startSession}>
               Start 5-minute session
             </Button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Session controls</h2>
           <div className="mt-4 grid gap-3">
             <Input placeholder="Session ID" value={sessionId} onChange={(e) => setSessionId(e.target.value)} />
-            <div className="rounded-md border border-zinc-800 bg-zinc-900/60 p-3 text-xs text-zinc-300">
+            <div className="app-card-soft p-3 text-xs text-zinc-300">
               <p className="font-semibold text-zinc-200">BLE broadcast payload</p>
               <pre className="mt-2 overflow-auto whitespace-pre-wrap">
                 {blePayload
@@ -148,11 +148,11 @@ export default function TeacherDashboard() {
                   : "Start session and fetch token every 10-15s for BLE advertising"}
               </pre>
               <div className="mt-2 flex gap-2">
-                <Button className="border border-zinc-700 text-white hover:bg-zinc-900" onClick={refreshBleToken}>
+                <Button className="app-muted-button" onClick={refreshBleToken}>
                   Refresh BLE token
                 </Button>
                 <Button
-                  className="border border-zinc-700 text-white hover:bg-zinc-900"
+                  className="app-muted-button"
                   onClick={copyBlePayload}
                   disabled={!blePayload}
                 >
@@ -163,7 +163,7 @@ export default function TeacherDashboard() {
             <div className="grid gap-3 sm:grid-cols-[1fr_160px]">
               <Input placeholder="Student ID for manual correction" value={studentId} onChange={(e) => setStudentId(e.target.value)} />
               <select
-                className="h-10 rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm text-white"
+                className="app-input h-10 rounded-md px-3 text-sm"
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
               >
@@ -174,14 +174,14 @@ export default function TeacherDashboard() {
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <Button
-                className="border border-zinc-700 text-white hover:bg-zinc-900"
+                className="app-muted-button"
                 disabled={!sessionId.trim() || !studentId.trim()}
                 onClick={() => api.markAttendance(sessionId, { userId: studentId, status }).then(setResult)}
               >
                 Manual mark
               </Button>
               <Button
-                className="bg-red-600 text-white hover:bg-red-500"
+                className="app-danger-button"
                 disabled={!sessionId.trim()}
                 onClick={() => api.endSession(sessionId).then(setResult)}
               >

@@ -65,7 +65,7 @@ export default function Register() {
     <AppShell title="Create Account" subtitle="Register as a teacher or student to start using attendance tools.">
       <div className="grid gap-6 lg:grid-cols-[minmax(0,28rem)_minmax(0,1fr)]">
         <form
-          className="rounded-lg border border-zinc-800 bg-zinc-950 p-6"
+          className="app-card p-6"
           onSubmit={handleRegister}
         >
           <div className="grid gap-4">
@@ -100,15 +100,15 @@ export default function Register() {
 
             <div className="grid gap-2">
               <span className="text-sm font-medium text-zinc-200">Role</span>
-              <div className="grid grid-cols-2 gap-2 rounded-md border border-zinc-800 bg-zinc-900 p-1">
+              <div className="grid grid-cols-2 gap-2 rounded-md border border-slate-700/60 bg-slate-950/60 p-1">
                 {(["STUDENT", "TEACHER"] as const).map((item) => (
                   <button
                     key={item}
                     type="button"
                     className={`h-10 rounded px-3 text-sm font-medium transition ${
                       role === item
-                        ? "bg-white text-zinc-950"
-                        : "text-zinc-300 hover:bg-zinc-800"
+                        ? "bg-cyan-300 text-slate-950"
+                        : "text-zinc-300 hover:bg-slate-800"
                     }`}
                     onClick={() => setRole(item)}
                   >
@@ -130,7 +130,7 @@ export default function Register() {
             )}
 
             <Button
-              className="bg-blue-600 text-white hover:bg-blue-500"
+              className="app-primary-button"
               disabled={!canSubmit || isSubmitting}
               type="submit"
             >
@@ -148,7 +148,7 @@ export default function Register() {
           <StatusPanel result={result} />
         </form>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+        <section className="app-card p-6">
           <h2 className="text-lg font-semibold">Signup rules</h2>
           <div className="mt-4 grid gap-4 text-sm leading-6 text-zinc-400">
             <p>Student accounts require a roll number because the backend validates it for that role.</p>

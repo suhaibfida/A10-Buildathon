@@ -61,11 +61,14 @@ export default function AppShell({
   }, []);
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-white">
-      <header className="border-b border-zinc-800 bg-black/60">
+    <main className="app-shell">
+      <header className="app-header sticky top-0 z-10">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-          <Link to="/" className="text-lg font-semibold tracking-tight">
-            AI Attendance
+          <Link to="/" className="flex items-center gap-3 text-lg font-semibold tracking-tight">
+            <span className="flex h-9 w-9 items-center justify-center rounded-md bg-cyan-400 text-sm font-bold text-slate-950 shadow-lg shadow-cyan-950/30">
+              AI
+            </span>
+            <span>Attendance</span>
           </Link>
           <nav className="flex flex-wrap gap-2 text-sm">
             {navItems.map((item) => (
@@ -74,7 +77,9 @@ export default function AppShell({
                 to={item.to}
                 className={({ isActive }) =>
                   `rounded-md px-3 py-2 transition ${
-                    isActive ? "bg-white text-zinc-950" : "text-zinc-300 hover:bg-zinc-900"
+                    isActive
+                      ? "bg-cyan-300 text-slate-950 shadow-sm shadow-cyan-950/20"
+                      : "text-slate-300 hover:bg-slate-800/80 hover:text-white"
                   }`
                 }
               >
@@ -86,7 +91,8 @@ export default function AppShell({
       </header>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="mb-8 max-w-3xl">
-          <h1 className="text-3xl font-semibold tracking-tight">{title}</h1>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Smart campus</p>
+          <h1 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">{title}</h1>
           {subtitle && <p className="mt-2 text-sm leading-6 text-zinc-400">{subtitle}</p>}
         </div>
         {children}

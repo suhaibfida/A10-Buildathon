@@ -42,8 +42,8 @@ type RagDocument = {
   createdAt: string;
 };
 
-const inputClass = "border border-zinc-700 bg-zinc-900 text-white placeholder:text-zinc-500";
-const selectClass = "h-10 rounded-md border border-zinc-700 bg-zinc-900 px-3 text-sm text-white";
+const inputClass = "app-input";
+const selectClass = "app-input h-10 rounded-md px-3 text-sm";
 const statusOptions: { value: UserStatus; label: string }[] = [
   { value: "NOT_REGISTERED", label: "Not approved" },
   { value: "ACTIVE", label: "Approved" },
@@ -189,7 +189,7 @@ export default function AdminDashboard() {
         <Metric label="Pending Students" value={pendingStudents.length} />
       </div>
 
-      <section className="mb-5 rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+      <section className="app-card mb-5 p-5">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="font-semibold">College knowledge base</h2>
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
               Add official college information. The API splits it into chunks, embeds it with Gemini, and uses it for assistant answers.
             </p>
           </div>
-          <span className="rounded-md border border-zinc-700 px-3 py-1 text-xs text-zinc-300">
+          <span className="rounded-md border border-cyan-300/25 bg-cyan-300/10 px-3 py-1 text-xs text-cyan-100">
             {ragDocuments.length} chunks
           </span>
         </div>
@@ -222,13 +222,13 @@ export default function AdminDashboard() {
             </select>
           </div>
           <textarea
-            className="min-h-40 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm leading-6 text-white placeholder:text-zinc-500"
+            className="app-input min-h-40 rounded-md px-3 py-2 text-sm leading-6"
             placeholder="Paste college policies, department notes, office hours, fees, placement info, exam rules, or other official data."
             value={ragForm.content}
             onChange={(e) => setRagForm({ ...ragForm, content: e.target.value })}
           />
           <Button
-            className="w-full bg-emerald-600 text-white hover:bg-emerald-500 sm:w-auto"
+            className="app-success-button w-full sm:w-auto"
             disabled={isSavingRag || !ragForm.title.trim() || !ragForm.content.trim()}
             onClick={saveRagDocument}
           >
@@ -238,14 +238,14 @@ export default function AdminDashboard() {
         <div className="mt-5 grid gap-3 lg:grid-cols-2">
           {ragDocuments.length ? (
             ragDocuments.map((item) => (
-              <section key={item.id} className="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+              <section key={item.id} className="app-card-soft p-4">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <h3 className="text-sm font-semibold text-zinc-100">{item.title}</h3>
                     <p className="mt-1 text-xs text-zinc-500">{item.type}</p>
                   </div>
                   <Button
-                    className="h-8 border border-zinc-700 px-3 text-xs text-white hover:bg-zinc-950"
+                    className="app-muted-button h-8 px-3 text-xs"
                     onClick={() => removeRagDocument(item.id)}
                   >
                     Delete
@@ -261,17 +261,17 @@ export default function AdminDashboard() {
       </section>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Create department</h2>
           <div className="mt-4 grid gap-3">
             <Input className={inputClass} placeholder="Department name" value={department} onChange={(e) => setDepartment(e.target.value)} />
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.createDepartment({ name: department.trim() }), () => setDepartment(""))}>
+            <Button className="app-primary-button" onClick={() => submit(() => api.createDepartment({ name: department.trim() }), () => setDepartment(""))}>
               Save department
             </Button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Create class</h2>
           <div className="mt-4 grid gap-3">
             <Input className={inputClass} placeholder="Class name" value={className} onChange={(e) => setClassName(e.target.value)} />
@@ -283,7 +283,7 @@ export default function AdminDashboard() {
                 </option>
               ))}
             </select>
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.createClass({ name: className.trim(), departmentId }), () => {
+            <Button className="app-primary-button" onClick={() => submit(() => api.createClass({ name: className.trim(), departmentId }), () => {
               setClassName("");
               setDepartmentId("");
             })}>
@@ -292,13 +292,13 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Create teacher</h2>
           <div className="mt-4 grid gap-3">
             <Input className={inputClass} placeholder="Name" value={teacher.name} onChange={(e) => setTeacher({ ...teacher, name: e.target.value })} />
             <Input className={inputClass} type="email" placeholder="Email" value={teacher.email} onChange={(e) => setTeacher({ ...teacher, email: e.target.value })} />
             <Input className={inputClass} type="password" placeholder="Temporary password" value={teacher.password} onChange={(e) => setTeacher({ ...teacher, password: e.target.value })} />
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.createTeacher({
+            <Button className="app-primary-button" onClick={() => submit(() => api.createTeacher({
               name: teacher.name.trim(),
               email: teacher.email.trim(),
               password: teacher.password,
@@ -308,7 +308,7 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Add student</h2>
           <div className="mt-4 grid gap-3">
             <Input className={inputClass} placeholder="Name" value={student.name} onChange={(e) => setStudent({ ...student, name: e.target.value })} />
@@ -338,7 +338,7 @@ export default function AdminDashboard() {
                 </option>
               ))}
             </select>
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.createStudent({
+            <Button className="app-primary-button" onClick={() => submit(() => api.createStudent({
               name: student.name.trim(),
               rollNumber: student.rollNumber.trim(),
               email: student.email.trim() || undefined,
@@ -360,7 +360,7 @@ export default function AdminDashboard() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Assign students to class</h2>
           <div className="mt-4 grid gap-3">
             <select className={selectClass} value={classStudents.classId} onChange={(e) => setClassStudents({ ...classStudents, classId: e.target.value })}>
@@ -372,18 +372,18 @@ export default function AdminDashboard() {
               ))}
             </select>
             <textarea
-              className="min-h-24 rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm text-white placeholder:text-zinc-500"
+              className="app-input min-h-24 rounded-md px-3 py-2 text-sm"
               placeholder="Student IDs or roll numbers, comma or line separated"
               value={classStudents.studentIds}
               onChange={(e) => setClassStudents({ ...classStudents, studentIds: e.target.value })}
             />
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.addStudentsToClass(classStudents.classId, { studentIds: ids(classStudents.studentIds) }), () => setClassStudents({ classId: "", studentIds: "" }))}>
+            <Button className="app-primary-button" onClick={() => submit(() => api.addStudentsToClass(classStudents.classId, { studentIds: ids(classStudents.studentIds) }), () => setClassStudents({ classId: "", studentIds: "" }))}>
               Assign students
             </Button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+        <section className="app-card p-5">
           <h2 className="font-semibold">Assign teacher to class</h2>
           <div className="mt-4 grid gap-3">
             <select className={selectClass} value={teacherAssign.classId} onChange={(e) => setTeacherAssign({ ...teacherAssign, classId: e.target.value })}>
@@ -402,13 +402,13 @@ export default function AdminDashboard() {
                 </option>
               ))}
             </select>
-            <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={() => submit(() => api.assignTeacherToClass(teacherAssign.classId, { teacherId: teacherAssign.teacherId }), () => setTeacherAssign({ classId: "", teacherId: "" }))}>
+            <Button className="app-primary-button" onClick={() => submit(() => api.assignTeacherToClass(teacherAssign.classId, { teacherId: teacherAssign.teacherId }), () => setTeacherAssign({ classId: "", teacherId: "" }))}>
               Assign teacher
             </Button>
           </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 lg:col-span-2">
+        <section className="app-card p-5 lg:col-span-2">
           <h2 className="font-semibold">Student approval status</h2>
           <div className="mt-4 grid gap-3 md:grid-cols-[1fr_180px_auto]">
             <select className={selectClass} value={studentStatus.studentId} onChange={(e) => setStudentStatus({ ...studentStatus, studentId: e.target.value })}>
@@ -426,17 +426,17 @@ export default function AdminDashboard() {
                 </option>
               ))}
             </select>
-            <Button className="bg-emerald-600 text-white hover:bg-emerald-500" onClick={() => submit(() => api.updateStudentStatus(studentStatus.studentId, { status: studentStatus.status }))}>
+            <Button className="app-success-button" onClick={() => submit(() => api.updateStudentStatus(studentStatus.studentId, { status: studentStatus.status }))}>
               Update status
             </Button>
           </div>
         </section>
       </div>
 
-      <section className="mt-5 rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+      <section className="app-card mt-5 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-semibold">Admin data</h2>
-          <Button className="border border-zinc-700 text-white hover:bg-zinc-900" onClick={() => refreshAdminData()}>
+          <Button className="app-muted-button" onClick={() => refreshAdminData()}>
             {isLoading ? "Refreshing..." : "Refresh"}
           </Button>
         </div>
@@ -455,7 +455,7 @@ export default function AdminDashboard() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+    <section className="app-card p-5">
       <p className="text-sm text-zinc-400">{label}</p>
       <p className="mt-2 text-3xl font-semibold">{value}</p>
     </section>
@@ -464,7 +464,7 @@ function Metric({ label, value }: { label: string; value: number }) {
 
 function DataList({ title, items }: { title: string; items: string[] }) {
   return (
-    <section className="rounded-md border border-zinc-800 bg-zinc-900 p-4">
+    <section className="app-card-soft p-4">
       <h3 className="text-sm font-semibold text-zinc-200">{title}</h3>
       <div className="mt-3 grid max-h-56 gap-2 overflow-auto text-xs leading-5 text-zinc-400">
         {items.length ? items.map((item) => <code key={item}>{item}</code>) : <span>No records yet.</span>}

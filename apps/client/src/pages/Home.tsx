@@ -29,9 +29,9 @@ export default function Home() {
       subtitle="Role-based attendance with clerk setup, teacher sessions, student face capture, and data-aware assistant support."
     >
       <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
-        <section className="rounded-lg border border-zinc-800 bg-zinc-950 p-6">
-          <p className="text-sm font-medium uppercase tracking-wider text-zinc-500">Present today</p>
-          <div className="mt-4 text-6xl font-semibold tracking-tight">{readCount(result)}</div>
+        <section className="app-card p-6">
+          <p className="text-sm font-medium uppercase tracking-wider text-cyan-300">Present today</p>
+          <div className="mt-4 text-6xl font-semibold tracking-tight text-white">{readCount(result)}</div>
           <p className="mt-4 text-sm leading-6 text-zinc-400">
             Counts unique students who attended at least one session today. The frontend only displays
             the backend total.
@@ -39,19 +39,19 @@ export default function Home() {
         </section>
 
         <section className="grid gap-3">
-          <Link className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 hover:bg-zinc-900" to="/login">
+          <Link className="app-link-card p-5" to="/login">
             <h2 className="font-semibold">Login</h2>
             <p className="mt-1 text-sm text-zinc-400">Admin, teacher, and active student access.</p>
           </Link>
-          <Link className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 hover:bg-zinc-900" to="/register">
+          <Link className="app-link-card p-5" to="/register">
             <h2 className="font-semibold">Register</h2>
             <p className="mt-1 text-sm text-zinc-400">Create teacher and student accounts.</p>
           </Link>
-          <Link className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 hover:bg-zinc-900" to="/student/activate">
+          <Link className="app-link-card p-5" to="/student/activate">
             <h2 className="font-semibold">Student activation</h2>
             <p className="mt-1 text-sm text-zinc-400">Use roll number, set password, then register face.</p>
           </Link>
-          <Link className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 hover:bg-zinc-900" to="/assistant">
+          <Link className="app-link-card p-5" to="/assistant">
             <h2 className="font-semibold">AI assistant</h2>
             <p className="mt-1 text-sm text-zinc-400">Ask questions using your own attendance data and college info.</p>
           </Link>

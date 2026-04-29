@@ -41,15 +41,15 @@ export default function AssistantPage() {
       title="AI Assistant"
       subtitle="Ask questions using official college knowledge added by admins. The backend retrieves matching chunks before asking Gemini."
     >
-      <section className="max-w-3xl rounded-lg border border-zinc-800 bg-zinc-950 p-5">
+      <section className="app-card max-w-3xl p-5">
         <textarea
-          className="min-h-36 w-full rounded-md border border-zinc-700 bg-zinc-900 px-3 py-2 text-sm leading-6 text-white placeholder:text-zinc-500"
+          className="app-input min-h-36 w-full rounded-md px-3 py-2 text-sm leading-6"
           placeholder="Example: What are the exam rules for my department?"
           value={question}
           onChange={(event) => setQuestion(event.target.value)}
         />
         <Button
-          className="mt-3 bg-blue-600 text-white hover:bg-blue-500"
+          className="app-primary-button mt-3"
           disabled={!question.trim() || isAsking}
           onClick={askQuestion}
         >
@@ -57,14 +57,14 @@ export default function AssistantPage() {
         </Button>
 
         {answer && (
-          <section className="mt-5 rounded-md border border-zinc-800 bg-zinc-900 p-4">
+          <section className="app-card-soft mt-5 p-4">
             <h2 className="text-sm font-semibold text-zinc-200">Answer</h2>
             <p className="mt-3 whitespace-pre-wrap text-sm leading-6 text-zinc-100">{answer}</p>
           </section>
         )}
 
         {sources.length > 0 && (
-          <section className="mt-4 rounded-md border border-zinc-800 bg-zinc-900 p-4">
+          <section className="app-card-soft mt-4 p-4">
             <h2 className="text-sm font-semibold text-zinc-200">Sources</h2>
             <div className="mt-3 grid gap-2">
               {sources.map((source) => (

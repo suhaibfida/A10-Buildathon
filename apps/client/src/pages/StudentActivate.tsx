@@ -24,11 +24,11 @@ export default function StudentActivate() {
       title="Activate Student Account"
       subtitle="Students start inactive. Use the roll number created by the admin, then set a password."
     >
-      <section className="max-w-md rounded-lg border border-zinc-800 bg-zinc-950 p-6">
+      <section className="app-card max-w-md p-6">
         <div className="grid gap-3">
           <Input placeholder="Roll number" value={rollNumber} onChange={(e) => setRollNumber(e.target.value)} />
           <Input type="password" placeholder="New password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={activate}>
+          <Button className="app-primary-button" onClick={activate}>
             Activate account
           </Button>
         </div>

@@ -48,14 +48,14 @@ export function EndpointForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="rounded-lg border border-zinc-800 bg-zinc-950 p-5 shadow-sm"
+      className="app-card p-5"
     >
       <div className="mb-5">
         <h2 className="text-base font-semibold text-white">{title}</h2>
         <p className="mt-1 font-mono text-xs text-zinc-500">POST {path}</p>
       </div>
       <div className="grid gap-4">{children}</div>
-      <Button type="submit" className="mt-5 w-full bg-blue-600 text-white hover:bg-blue-500">
+      <Button type="submit" className="app-primary-button mt-5 w-full">
         Submit
       </Button>
       <ResponseBox result={result} />

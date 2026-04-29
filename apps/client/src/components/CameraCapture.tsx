@@ -59,22 +59,22 @@ export default function CameraCapture({
   }
 
   return (
-    <div className="rounded-lg border border-zinc-800 bg-zinc-950 p-4">
+    <div className="app-card p-4">
       <div className="aspect-video overflow-hidden rounded-md bg-black">
         <video ref={videoRef} autoPlay muted playsInline className="h-full w-full object-cover" />
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button className="bg-zinc-100 text-zinc-950 hover:bg-white" onClick={startCamera}>
+        <Button className="app-success-button" onClick={startCamera}>
           Start camera
         </Button>
-        <Button className="bg-blue-600 text-white hover:bg-blue-500" onClick={captureFrame}>
+        <Button className="app-primary-button" onClick={captureFrame}>
           Capture frame
         </Button>
-        <Button className="border border-zinc-700 text-zinc-100 hover:bg-zinc-900" onClick={stopCamera}>
+        <Button className="app-muted-button" onClick={stopCamera}>
           Stop
         </Button>
         <Button
-          className="border border-zinc-700 text-zinc-100 hover:bg-zinc-900"
+          className="app-muted-button"
           onClick={() => syncFrames([])}
         >
           Clear
