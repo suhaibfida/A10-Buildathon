@@ -20,6 +20,24 @@ export type CurrentUser = {
   departmentId?: string | null;
 };
 
+export type AttendanceHistoryRecord = {
+  id: string;
+  status: "PRESENT" | "ABSENT" | "FLAGGED";
+  confidence?: number | null;
+  createdAt: string;
+  session?: {
+    id: string;
+    startTime: string;
+    status: "OPEN" | "CLOSED" | "CANCELLED";
+    class?: {
+      id: string;
+      name: string;
+      department?: { id: string; name: string } | null;
+    } | null;
+    teacher?: { id: string; name: string } | null;
+  } | null;
+};
+
 export type TeacherClass = {
   id: string;
   name: string;
@@ -134,6 +152,7 @@ export const api = {
   studentActiveSession: () => apiGet("/student/attendance/active-session"),
   todayPresent: () => apiGet("/attendance/today/present-count"),
   studentSummary: () => apiGet("/student/attendance/summary"),
+  studentAttendanceHistory: () => apiGet("/student/attendance/history"),
   assistant: (body: { question: string }) => apiPost("/assistant/ask", body),
   markAttendanceWithBle: (body: { sessionId: string; token: string; frames: string[] }) =>
     apiPost("/attendance/mark", body),

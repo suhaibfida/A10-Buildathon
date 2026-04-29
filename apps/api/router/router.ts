@@ -29,6 +29,7 @@ import { recognizeFace } from "../controller/facialRecognition.js"
 import { markAttendanceWithBle } from "../controller/attendanceMark.js"
 import {
   studentActiveSession,
+  studentAttendanceHistory,
   studentAttendanceSummary,
   teacherActiveSessionByClass,
   teacherClasses,
@@ -97,6 +98,12 @@ router.get(
   authMiddleware,
   authorizeRoles("STUDENT"),
   studentAttendanceSummary
+)
+router.get(
+  "/student/attendance/history",
+  authMiddleware,
+  authorizeRoles("STUDENT"),
+  studentAttendanceHistory
 )
 router.get(
   "/student/attendance/active-session",

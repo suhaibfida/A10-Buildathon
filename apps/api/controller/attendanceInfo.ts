@@ -65,6 +65,60 @@ export const studentAttendanceSummary = async (req: Request, res: Response) => {
   }
 }
 
+export const studentAttendanceHistory = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId
+    if (!userId) {
+      return res.status(401).json({ error: "Unauthorized" })
+    }
+
+    const student = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, role: true },
+    })
+
+    if (!student || student.role !== "STUDENT") {
+      return res.status(403).json({ error: "Only students can view attendance history" })
+    }
+
+    const records = await prisma.attendance.findMany({
+      where: { userId },
+      orderBy: { createdAt: "desc" },
+      take: 120,
+      select: {
+        id: true,
+        status: true,
+        confidence: true,
+        createdAt: true,
+        session: {
+          select: {
+            id: true,
+            startTime: true,
+            status: true,
+            class: {
+              select: {
+                id: true,
+                name: true,
+                department: {
+                  select: { id: true, name: true },
+                },
+              },
+            },
+            teacher: {
+              select: { id: true, name: true },
+            },
+          },
+        },
+      },
+    })
+
+    return res.status(200).json({ data: records })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).json({ error: "Internal server error" })
+  }
+}
+
 export const teacherClasses = async (req: Request, res: Response) => {
   try {
     const userId = req.userId
