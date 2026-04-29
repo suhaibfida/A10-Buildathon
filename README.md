@@ -1,10 +1,13 @@
 #  AI0 Attendance System (TurboRepo Monorepo)
 <img width="15083" height="6941" alt="imagee" src="https://github.com/user-attachments/assets/51e693fa-a341-4cd0-98de-42b8ff76eb17" />
+<img width="1763" height="882" alt="image" src="https://github.com/user-attachments/assets/d271dc38-3d39-43d8-a96e-6243a40a86d1" />
+<img width="1681" height="768" alt="image" src="https://github.com/user-attachments/assets/1d7796d9-f805-4f7c-af4c-b177f794d25a" />
 <img width="1898" height="923" alt="image" src="https://github.com/user-attachments/assets/7b2379c3-52a1-4e18-a036-09fa1e617cf7" />
 <img width="1600" height="825" alt="WhatsApp Image 2026-04-29 at 12 21 47 PM" src="https://github.com/user-attachments/assets/5b9a404e-6a8a-4038-ac36-a326c67eb09a" />
 <img width="1600" height="813" alt="WhatsApp Image 2026-04-29 at 12 24 53 PM" src="https://github.com/user-attachments/assets/85015fe9-9778-4d44-abfc-ffbd23fc0cca" />
 <img width="1876" height="829" alt="image" src="https://github.com/user-attachments/assets/dab17ec5-2ffc-4892-aee7-ac6ef33a6d7b" />
-<img width="1675" height="913" alt="image" src="https://github.com/user-attachments/assets/94dc169b-1d5e-4686-9cae-2433e1e72714" />
+<img width="1860" height="878" alt="image" src="https://github.com/user-attachments/assets/174c15a4-0111-410c-b5d4-ac798cd281d6" />
+
 
 An AI-powered attendance platform using **face recognition + BLE proximity + session-based verification**.
 Built with a modern **TurboRepo + Bun + TypeScript** stack.
